@@ -1,4 +1,4 @@
-package com.fengluyan.JavaWeb;
+package com.fengluyan.JavaWeb.controller;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

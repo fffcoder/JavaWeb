@@ -4,7 +4,7 @@ package com.fengluyan.JavaWeb.model;
  * Created by fly on 10/21/17.
  */
 public class Customer {
-    private long Id;
+    private long id;
     private String name;
     private String contact;
     private String telephone;
@@ -12,11 +12,11 @@ public class Customer {
     private String remark;
 
     public long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(long id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getName() {

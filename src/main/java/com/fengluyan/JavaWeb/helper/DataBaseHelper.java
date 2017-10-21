@@ -1,12 +1,13 @@
 package com.fengluyan.JavaWeb.helper;
 
 import com.fengluyan.JavaWeb.util.PropsUtil;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -18,34 +19,34 @@ import java.util.Properties;
  */
 
 public final class DataBaseHelper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseHelper.class);
-    private static final QueryRunner QUERY_RUNNER = new QueryRunner();
-    private static final ThreadLocal<Connection> CONNECTION_HOLDER = new ThreadLocal<>();
-
-    private static final String DRIVER;
-    private static final String URL;
-    private static final String USERNAME;
-    private static final String PASSWORD;
+    private static final Logger LOGGER;
+    private static final QueryRunner QUERY_RUNNER;
+    private static final ThreadLocal<Connection> CONNECTION_HOLDER;
+    private static final BasicDataSource DATA_SOURCE;
 
     static {
-        Properties props = PropsUtil.loadProps("config.properties");
-        DRIVER = props.getProperty("jdbc.driver");
-        URL = props.getProperty("jdbc.url");
-        USERNAME = props.getProperty("jdbc.username");
-        PASSWORD = props.getProperty("jdbc.password");
+        LOGGER = LoggerFactory.getLogger(DataBaseHelper.class);
+        QUERY_RUNNER = new QueryRunner();
+        CONNECTION_HOLDER = new ThreadLocal<>();
 
-        try {
-            Class.forName(DRIVER);
-        } catch (ClassNotFoundException e) {
-            LOGGER.error("can not load jdbc driver", e);
-        }
+        Properties props = PropsUtil.loadProps("config.properties");
+//        String driver = props.getProperty("jdbc.driver");
+        String url = props.getProperty("jdbc.url");
+        String username = props.getProperty("jdbc.username");
+        String password = props.getProperty("jdbc.password");
+
+        DATA_SOURCE = new BasicDataSource();
+//        DATA_SOURCE.setDriverClassName(driver);
+        DATA_SOURCE.setUrl(url);
+        DATA_SOURCE.setUsername(username);
+        DATA_SOURCE.setPassword(password);
     }
 
     public static Connection getConnection() {
         Connection conn = CONNECTION_HOLDER.get();
-        if(conn == null) {
+        if (conn == null) {
             try {
-                conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+                conn = DATA_SOURCE.getConnection();
             } catch (SQLException e) {
                 LOGGER.error("get connection failure", e);
                 throw new RuntimeException(e);
@@ -67,13 +68,40 @@ public final class DataBaseHelper {
         } finally {
             closeConnection();
         }
-
         return entityList;
+    }
+
+    public static <T> T queryEntity(Class<T> entityClass, String sql, Object... params) {
+        T entity;
+        try {
+            Connection conn = getConnection();
+            entity = QUERY_RUNNER.query(conn, sql, new BeanHandler<>(entityClass), params);
+        } catch (SQLException e) {
+            LOGGER.error("query entity failure", e);
+            throw new RuntimeException(e);
+        } finally {
+            closeConnection();
+        }
+        return entity;
+    }
+
+    public static int executeUpdate(String sql, Object... params) {
+        int rows = 0;
+        try {
+            Connection conn = getConnection();
+            rows = QUERY_RUNNER.update(conn, sql, params);
+        } catch (SQLException e) {
+            LOGGER.error("execute update failure", e);
+            throw new RuntimeException(e);
+        } finally {
+            closeConnection();
+        }
+        return rows;
     }
 
     public static void closeConnection() {
         Connection conn = CONNECTION_HOLDER.get();
-        if(conn != null) {
+        if (conn != null) {
             try {
                 conn.close();
             } catch (SQLException e) {
