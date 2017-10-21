@@ -1,5 +1,7 @@
 package com.fengluyan.JavaWeb.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Created by fly on 10/21/17.
  */
@@ -20,7 +22,7 @@ public final class CastUtil {
         double value = defalutValue;
         if (obj != null) {
             String strValue = castString(obj);
-            if (StringUtil.isNotEmpty(strValue)) {
+            if (StringUtils.isNotEmpty(strValue)) {
                 try {
                     value = Double.parseDouble(strValue);
                 } catch (NumberFormatException e) {
@@ -40,7 +42,7 @@ public final class CastUtil {
         int value = defalutValue;
         if (obj != null) {
             String strValue = castString(obj);
-            if (StringUtil.isNotEmpty(strValue)) {
+            if (StringUtils.isNotEmpty(strValue)) {
                 try {
                     value = Integer.parseInt(strValue);
                 } catch (NumberFormatException e) {
@@ -60,7 +62,7 @@ public final class CastUtil {
         long value = defalutValue;
         if (obj != null) {
             String strValue = castString(obj);
-            if (StringUtil.isNotEmpty(strValue)) {
+            if (StringUtils.isNotEmpty(strValue)) {
                 try {
                     value = Long.parseLong(strValue);
                 } catch (NumberFormatException e) {
