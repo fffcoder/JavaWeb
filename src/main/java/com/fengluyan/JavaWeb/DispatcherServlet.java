@@ -1,6 +1,5 @@
 package com.fengluyan.JavaWeb;
 
-import com.fengluyan.JavaWeb.annotation.Controller;
 import com.fengluyan.JavaWeb.bean.Data;
 import com.fengluyan.JavaWeb.bean.Handler;
 import com.fengluyan.JavaWeb.bean.Param;
@@ -14,6 +13,8 @@ import com.fengluyan.JavaWeb.util.ReflectionUtil;
 import com.fengluyan.JavaWeb.util.StreamUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -34,7 +35,9 @@ import java.util.Map;
  * Created by fly on 10/22/17.
  */
 @WebServlet(urlPatterns = "/*", loadOnStartup = 0)
-public class DispachterServlet extends HttpServlet {
+public class DispatcherServlet extends HttpServlet {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DispatcherServlet.class);
+
     @Override
     public void init(ServletConfig servletConfig) {
         HelperLoader.init();

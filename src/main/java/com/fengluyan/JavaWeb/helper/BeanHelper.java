@@ -24,9 +24,9 @@ public final class BeanHelper {
         return BEAN_MAP;
     }
 
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
     public static <T> T getBean(Class<T> cls) {
-        if(BEAN_MAP.containsKey(cls)) {
+        if(!BEAN_MAP.containsKey(cls)) {
             throw new RuntimeException("can not get bean by class: " + cls);
         }
         return (T) BEAN_MAP.get(cls);
